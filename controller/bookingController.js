@@ -48,17 +48,27 @@ export async function getBooking(req, res) {
   try {
     if (isUserNull(req)) {
       res.status(401).json({
-        message: "You are not authorized to perform this task",
+        message: "Please login to continue",
       });
       return;
     }
 
+    if(!isAdmin(req)){
+        res.status(403).json({
+            message: "You are not authorized to perform this task",
+        });
+        return;
+    }
+
     const bookings = await Booking.find();
-    res.json(bookings);
+    res.json({
+      bookings: bookings,
+      error: false
+    });
   } catch (e) {
     res.status(500).json({
-      message: "Internal server error",
-      error: e.message,
+      message: e.message,
+      error: true,
     });
   }
 }
@@ -67,17 +77,57 @@ export async function getBookingByEmail(req, res) {
   try {
     if (isUserNull(req)) {
       res.status(401).json({
-        message: "You are not authorized to perform this task",
+        message: "Please login to continue",
       });
       return;
     }
 
     const email = req.params.email;
     const bookings = await Booking.find({ email: email });
-    res.json(bookings);
+    res.json({
+      bookings: bookings,
+      error: false
+    });
   } catch (e) {
     res.status(500).json({
       message: "Internal server error: " + e.message,
+      error: true
+    });
+  }
+}
+
+export async function updateBooking(req, res) {
+  const bookingData = req.body;
+  try {
+    if( isUserNull(req)) {
+      res.status(401).json({
+        message: "You are not authorized to perform this task",
+      });
+      return;
+    }
+
+    if(!isAdmin(req)){
+        res.status(403).json({
+            message: "You are not authorized to perform this task",
+        });
+        return;
+    }
+
+    const booking = await Booking.updateOne(
+      {
+        id: bookingData.id,
+      },
+      bookingData
+    );
+
+    res.json({
+      message: "Booking updated successfully",
+      error: false,
+    });4
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      error: true,
     });
   }
 }
@@ -106,8 +156,8 @@ export async function updateBookingStatus(req, res) {
     });
   } catch (e) {
     res.status(500).json({
-      message: "Internal server error",
-      error: e.message,
+      message: e.message,
+      error: true,
     });
   }
 }
@@ -143,8 +193,8 @@ export async function deleteBooking(req, res) {
     });
   } catch (e) {
     res.status(500).json({
-      message: "Internal server error",
-      error: e.message,
+      message: e.message,
+      error: true,
     });
   }
 }

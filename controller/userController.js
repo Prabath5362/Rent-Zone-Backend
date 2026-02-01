@@ -137,7 +137,7 @@ export async function getUserDetails(req, res) {
 }
 
 export async function updateUser(req, res) {
-  try {
+  try {   
     if (isUserNull(req)) {
     res.status(400).json({
       message: "You are not authorized to perform this task",
@@ -146,7 +146,7 @@ export async function updateUser(req, res) {
     return;
   }
 
-  if (isUser(req)) {
+ 
     const updateData = req.body;
     if (updateData.password != null && updateData.password !== "") {
       updateData.password = bcrypt.hashSync(updateData.password, 10);
@@ -167,12 +167,16 @@ export async function updateUser(req, res) {
       message: "User updated successfully",
       error: false
     });
-  }
+    console.log("user update success");
+    
+  
   }catch(e){
     res.status(500).json({
       message: "User updating failed !",
       error: true
     })
+    console.log("user update failed"+ e.message);
+    
   }
 }
 
