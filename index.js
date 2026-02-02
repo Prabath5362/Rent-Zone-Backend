@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken"
 import cors from "cors"
 import bookingRouter from "./routes/bookingRoute.js"
 import categoryRouter from "./routes/categoryRoute.js"
+import dashboardRouter from "./routes/dashboardRoute.js"
 
 const app = express()
 app.use(cors())
@@ -28,6 +29,7 @@ app.use("/api/user",userRouter);
 app.use("/api/product",productRouter);
 app.use("/api/booking",bookingRouter)
 app.use("/api/category",categoryRouter);
+app.use("/api/dashboard",dashboardRouter);
 
 app.get("/",(req,res)=>{
     res.send("Server updated is running on port 3000");

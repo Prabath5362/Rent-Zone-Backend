@@ -47,34 +47,43 @@ const bookingSchema = new mongoose.Schema({
         required: true
     },
 
-    productKey: {
-        type: String,
-        required: true
-    },
+    // productKey: {
+    //     type: String,
+    //     required: true
+    // },
 
-    productImage: {
-        type: String,
-        required: true
-    },
+    // productImage: {
+    //     type: String,
+    //     required: true,
+    //     default: "https://img.drz.lazcdn.com/static/lk/p/4d2bac27ddf357068366bf18c182a747.jpg_200x200q80.avif"
+    // },
 
-    productName: {
-        type: String,
-        required: true
-    },
+    // productName: {
+    //     type: String,
+    //     required: true
+    // },
 
-    productCategories: [{
-        type: String,
-        required: true
-    }],
+    // productCategories: [{
+    //     type: String,
+    //     required: true
+    // }],
 
-    productType: {
-        type: String,
-        required: true
-    },
+    // productType: {
+    //     type: String,
+    //     required: true
+    // },
+
+    // no need above product detais bc we have product reference, only need add product id (not product key) and booking quantity
 
     productQuantity: {
         type: Number,
         required: true
+    },
+
+    product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "product",
+        required: true,
     },
 
     bookingDate: {

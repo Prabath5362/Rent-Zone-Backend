@@ -1,4 +1,5 @@
 import Booking from "../model/booking.js";
+import Product from "../model/product.js";
 import { isAdmin, isUserNull } from "./userController.js";
 
 export async function addBooking(req, res) {
@@ -8,6 +9,26 @@ export async function addBooking(req, res) {
     if (isUserNull(req)) {
       res.status(401).json({
         message: "You are not authorized to perform this task",
+      });
+      return;
+    }
+
+    const product =await  Product.findOne({
+      _id : bookingData.product
+    });
+
+    if(!product){
+      res.status(400).json({
+        message: "Product not found !",
+        error: true
+      });
+      return;
+    }
+
+    if(product.stock <= 0){
+       res.status(400).json({
+        message: "Product out of stock !",
+        error: true
       });
       return;
     }
@@ -23,8 +44,9 @@ export async function addBooking(req, res) {
     bookingData.nic = req.user.nic;
     bookingData.profilePic = req.user.profilePic;
     bookingData.contact = req.user.contact;
+    bookingData.product = product._id
 
-    console.log("" + bookingData.productType);
+  
 
     if (bookingData.productType === "spare") {
       delete bookingData.pickupDate;
@@ -33,6 +55,10 @@ export async function addBooking(req, res) {
 
     const booking = new Booking(bookingData);
     await booking.save();
+
+    product.stock -= bookingData.productQuantity;
+    product.save();
+
     res.json({
       message: "Booking created successfully",
     });
@@ -166,6 +192,9 @@ export async function deleteBooking(req, res) {
   const bookingId = req.params.bookingId;
   const userEmail = req.user.email;
 
+  const booking = await Booking.findOne({ id: bookingId }).populate("product");
+
+
   try {
     if (isUserNull(req)) {
       res.status(401).json({
@@ -175,8 +204,6 @@ export async function deleteBooking(req, res) {
     }
 
     if (!isAdmin(req)) {
-      const booking = await Booking.findOne({ id: bookingId });
-
       if (booking.email !== userEmail) {
         res.status(403).json({
           message: "You are not authorized to delete this booking",
@@ -185,9 +212,18 @@ export async function deleteBooking(req, res) {
       }
     }
 
-    await Booking.deleteOne({
+     await Booking.deleteOne({
       id: bookingId,
     });
+
+    console.log("product: "+  booking.product);
+    
+
+    if(booking.product && booking.productQuantity){
+      booking.product.stock += booking.productQuantity;
+      await booking.product.save();
+    }
+
     res.json({
       message: "Booking deleted successfully",
     });
