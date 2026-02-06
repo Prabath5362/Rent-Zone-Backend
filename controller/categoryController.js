@@ -29,10 +29,14 @@ export async function addCategory(req, res) {
 export async function getCategories(req, res) {
     try {
         const categories = await Category.find();
-        res.json(categories);
+        res.json({
+            categories: categories,
+            error: false
+        });
     } catch (e) {
         res.status(500).json({
-            message: "Categories couldn't fetch"
+            message: "Categories couldn't fetch",
+            error: true
         });
     }   
 }

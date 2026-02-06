@@ -1,5 +1,5 @@
 import express from 'express';
-import { addProducts, deleteProduct, getProducts, updateProduct } from '../controller/productController.js';
+import { addProducts, deleteProduct, getfeaturedProducts, getProducts, updateProduct } from '../controller/productController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 
@@ -11,6 +11,8 @@ productRouter.get("/get",authMiddleware,getProducts);
 productRouter.delete("/delete/:productKey",authMiddleware,deleteProduct);
 productRouter.put("/update/:productKey",authMiddleware,updateProduct);
 
+
+productRouter.get("/getFeaturedProducts",getfeaturedProducts);
 
 
 export default productRouter;

@@ -56,9 +56,9 @@ export async function addProducts(req, res) {
 export async function getProducts(req, res) {
     try {
         if (isUserNull(req) || !isAdmin(req)) {
-            const products = await Product.find({
-                availability: true
-            });
+            const products = await Product.find();
+
+             console.log(products);
             res.json({
                 products : products,
                 error : false
@@ -76,7 +76,8 @@ export async function getProducts(req, res) {
             return;
         }
 
-
+        
+        
     } catch (e) {
         res.status(500).json({
             message: "Product couldn't fetch" + e.message,
@@ -158,6 +159,24 @@ export async function updateProduct(req, res) {
     }
 }
 
+
+export async function getfeaturedProducts(req,res) {
+    try {
+        const featuredProducts = await Product.find({ availability: true }).limit(5).sort({ createdAt: -1 });
+        res.json({
+            featuredProducts: featuredProducts,
+            error: false
+        });
+
+  
+        
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to fetch featured products",
+            error: true
+        });
+    }
+}
 
 
 

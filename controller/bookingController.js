@@ -25,7 +25,7 @@ export async function addBooking(req, res) {
       return;
     }
 
-    if(product.stock <= 0){
+    if(product.stock <= 0 || bookingData.productQuantity > product.stock){
        res.status(400).json({
         message: "Product out of stock !",
         error: true
@@ -40,11 +40,8 @@ export async function addBooking(req, res) {
     }
 
     bookingData.id = id;
-    bookingData.email = req.user.email;
-    bookingData.nic = req.user.nic;
-    bookingData.profilePic = req.user.profilePic;
-    bookingData.contact = req.user.contact;
-    bookingData.product = product._id
+
+   
 
   
 
@@ -86,7 +83,7 @@ export async function getBooking(req, res) {
         return;
     }
 
-    const bookings = await Booking.find();
+    const bookings = await Booking.find().populate("product");
     res.json({
       bookings: bookings,
       error: false
@@ -109,7 +106,7 @@ export async function getBookingByEmail(req, res) {
     }
 
     const email = req.params.email;
-    const bookings = await Booking.find({ email: email });
+    const bookings = await Booking.find({ email: email }).populate("product");
     res.json({
       bookings: bookings,
       error: false

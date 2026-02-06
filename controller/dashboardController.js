@@ -51,25 +51,25 @@ export async function getDashboardDetails(req, res) {
     ]);
 
     // Today orders
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const startOfToday = new Date();
+startOfToday.setUTCHours(0, 0, 0, 0);
 
-    const tomorrow = new Date();
-    tomorrow.setHours(23, 59, 59, 999);
+const endOfToday = new Date();
+endOfToday.setUTCHours(23, 59, 59, 999);
 
-    const todayOrdersData = await Booking.aggregate([
-      {
-        $match: {
-          bookingDate: { $gte: today, $lte: tomorrow },
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          todayOrdersRevenue: { $sum: "$rentalCost" },
-        },
-      },
-    ]);
+const todayOrdersData = await Booking.aggregate([
+  {
+    $match: {
+      bookingDate: { $gte: startOfToday, $lte: endOfToday },
+    },
+  },
+  {
+    $group: {
+      _id: null,
+      todayOrdersRevenue: { $sum: "$rentalCost" },
+    },
+  },
+]);
 
     // this months orders
     const thisMonth = new Date();
@@ -216,6 +216,9 @@ export async function getDashboardDetails(req, res) {
 
     const thisYearOrdersRevenue =
       thisYearOrdersData[0]?.thisYearOrdersRevenue ?? 0;
+
+    console.log("top Products"+topProducts);
+    
 
     const dashboardDetails = {
       userCount: userCount ?? 0,
